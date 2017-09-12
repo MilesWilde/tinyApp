@@ -1,0 +1,17 @@
+<!-- Fill out the urls_show.ejs template to display the following:
+
+    The full URL and its shortened form. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+    <% include ./partials/_headers.ejs %>
+
+    <!-- Add your EJS code here -->
+    
+      <li><%= shortURL  %> :<%= urls[shortURL]%></li>
+</body>
+</html>

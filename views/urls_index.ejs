@@ -1,0 +1,25 @@
+<!-- Using EJS and HTML, code your urls_index.ejs file to display the following:
+
+    A list or table of the URLs and their shortened forms.
+    A link for shortening a new URL (this will be a dead link for now, that is it doesn't need to go anywhere since you'll be building its functionality later).
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+  
+</head>
+<body>
+    <% include ./partials/_headers.ejs %>
+
+    <!-- Add your EJS code here -->
+    <a href="http://localhost:8080/urls/new">the link</a>
+    
+    <% for(let currentUrl in urls){ %>
+      <li>longURL: <%=urls[currentUrl]%></li>
+      <li>shortURL: <%=currentUrl  %></li>
+      <li></li>
+    <%} %>
+</body>
+</html>
