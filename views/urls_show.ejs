@@ -11,7 +11,14 @@
     <% include ./partials/_headers.ejs %>
 
     <!-- Add your EJS code here -->
-    
+    <form action=<%='/urls/'+shortURL+'/update/'%> method="POST" style="margin:150px;">
+      <label for="longURL">Enter a new URL:</label>
+      <input id="longURL" type="text" name="longURL" placeholder="http://" style="width: 300px">
+      <button type ="submit"></button>
+      <input type="submit" value="Submit">
+    </form>
+      
+
       <li><%= shortURL  %> :<%= urls[shortURL]%></li>
 </body>
 </html>

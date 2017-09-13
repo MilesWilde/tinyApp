@@ -23,6 +23,16 @@ app.post("/urls", (req, res) => {
   res.redirect("http://localhost:8080/urls/" + randomString);
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("http://localhost:8080/urls/");
+})
+
+app.post("/urls/:id/update/", (req, res) => {
+  urlDatabase[req.params.id] = req.body.longURL;
+  res.redirect("http://localhost:8080/urls/");
+})
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
@@ -35,6 +45,7 @@ app.get("/urls", (req, res) => {
   let templateVars = {urls: urlDatabase};
   res.render("urls_index", templateVars);
 });
+
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]){
     res.end("Page doesn't exist");

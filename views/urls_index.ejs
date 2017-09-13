@@ -16,9 +16,17 @@
     <!-- Add your EJS code here -->
     <a href="http://localhost:8080/urls/new">the link</a>
     
-    <% for(let currentUrl in urls){ %>
-      <li>longURL: <%=urls[currentUrl]%></li>
-      <li>shortURL: <%=currentUrl  %></li>
+    <% for(let currentId in urls){ %>
+      <button id = "buttonInput" type = "submit">DELETE</button>
+      <script>
+        function myFunction() {
+          var x = document.getElementById("btn1").value;
+          document.getElementById("demo").innerHTML = x;
+        }
+      </script>
+      <form method="POST" action=<%='/urls/'+currentId+'/delete'%>></form>
+      <li>longURL: <%=urls[currentId]%></li>
+      <li>shortURL: <%=currentId  %></li>
       <li></li>
     <%} %>
 </body>
