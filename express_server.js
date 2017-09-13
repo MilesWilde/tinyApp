@@ -78,7 +78,20 @@ app.get("/register", (req,res)=>{
   res.render("urls_register", templateVars);
 })
 app.post("/register", (req,res)=>{
-
+  if (!req.body.email || !req.body.password){
+    res.status(400).send('Invalid entry')
+  } else{
+    let randomID = generateRandomString();
+    users[randomID] = {
+      id: randomID,
+      email: req.body.email,
+      password: req.body.password
+    };
+    res.cookie("user_id", req.body.email)
+    console.log(users);
+    res.redirect("urls");  
+  }
+  
 })
 app.post("/logout", (req,res)=> {
   res.clearCookie("username");
@@ -93,6 +106,7 @@ app.get("/urls/:id", (req, res) => {
     shortURL: req.params.id, 
     urls: urlDatabase,
     username: req.cookies["username"], };
+
   res.render("urls_show", templateVars);
 });
 app.get("/", (req, res) => {
