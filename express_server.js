@@ -4,6 +4,20 @@ var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 var cookieParser = require('cookie-parser')
 
+const users = { 
+  "userRandomID": {
+    id: "userRandomID", 
+    email: "user@example.com", 
+    password: "purple-monkey-dinosaur"
+  },
+ "user2RandomID": {
+    id: "user2RandomID", 
+    email: "user2@example.com", 
+    password: "dishwasher-funk"
+  }
+}
+
+
 app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -56,7 +70,16 @@ app.get("/urls", (req, res) => {
     username: req.cookies["username"],};
   res.render("urls_index", templateVars);
 });
+//register
+app.get("/register", (req,res)=>{
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies["username"],};
+  res.render("urls_register", templateVars);
+})
+app.post("/register", (req,res)=>{
 
+})
 app.post("/logout", (req,res)=> {
   res.clearCookie("username");
   res.redirect("/urls");
