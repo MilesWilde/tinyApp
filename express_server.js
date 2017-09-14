@@ -30,10 +30,31 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/login", (req,res)=>{
-  
-  res.cookie("username",req.body.username);
-  res.redirect("/urls");
+  // console.log("body ", req.body);
+  // console.log("users[user].email: ", users[user].email)
+  // console.log("req.body['user_id']: ", req.body['user.id'])
+  // console.log("users[user].password: ", users[user].password)
+  // console.log("req.body['password']): ", req.body['password']);
+  for (user in users){
+    if (users[user].email == req.body['user.id'] && users[user].password == req.body['password']){
+      res.cookie("user_id", req.body['user.id']);    
+      res.redirect("/");
+    } else if(users[user].email == req.body['user.id'] && users[user].password != req.body['password']){
+      res.status(403).send("password incorrect");
+    } 
+  }
+  res.status(403).send("user does not exist");
 });
+
+app.get("/login", (req,res)=>{
+  let templateVars = { 
+    shortURL: req.params.id, 
+    urls: urlDatabase,
+    user: users[req.cookies.user_id]};
+  res.render("urls_login", templateVars);
+});
+  
+
 
 app.post("/urls", (req, res) => {
   console.log(req.body);  // debug statement to see POST parameters
@@ -67,34 +88,47 @@ var urlDatabase = {
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"],};
+    user: req.cookies.user_id};
+    console.log("req.cookies.user_id: ", req.cookies.user_id);
   res.render("urls_index", templateVars);
 });
 //register
 app.get("/register", (req,res)=>{
   let templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"],};
+    user: req.cookies.user_id};
   res.render("urls_register", templateVars);
 })
 app.post("/register", (req,res)=>{
+  //checks if email exists, if yes sets flag = 1
+  let flag = 0;
+  for (user in users){
+    if (users[user].email == req.body.email){
+      flag = 1;
+    }
+  }
+  //if blank email or passowrd then return 400 error
   if (!req.body.email || !req.body.password){
-    res.status(400).send('Invalid entry')
-  } else{
+    res.status(400).send('Invalid entry (need both email and password. blanks will return this page)')
+  //if email exists return 400 error
+  }else if(flag == 1){
+    res.status(400).send('email already exists in database')
+  //if email&password&no matching email, create new entry
+  }else{
     let randomID = generateRandomString();
     users[randomID] = {
       id: randomID,
       email: req.body.email,
       password: req.body.password
     };
-    res.cookie("user_id", req.body.email)
-    console.log(users);
-    res.redirect("urls");  
+    console.log("posted to register, current users object: ", users);
+    res.redirect("login");  
   }
+
   
 })
 app.post("/logout", (req,res)=> {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 })
 app.get("/urls/:id", (req, res) => {
@@ -105,7 +139,7 @@ app.get("/urls/:id", (req, res) => {
   let templateVars = { 
     shortURL: req.params.id, 
     urls: urlDatabase,
-    username: req.cookies["username"], };
+    user: users[req.cookies.user_id]};
 
   res.render("urls_show", templateVars);
 });
@@ -122,6 +156,8 @@ app.get("/hello", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
 
 function generateRandomString() {
   let randomString = Math.random().toString(36).substring(2,8);

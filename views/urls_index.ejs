@@ -14,17 +14,12 @@
     <% include ./partials/_headers.ejs %>
 
     <!-- Add your EJS code here -->
-    <a href="http://localhost:8080/urls/new">the link</a>
-    
+    <a href="http://localhost:8080/urls/new">new tinyurl</a>
     <% for(let currentId in urls){ %>
-      <button id = "buttonInput" type = "submit">DELETE</button>
-      <script>
-        function myFunction() {
-          var x = document.getElementById("btn1").value;
-          document.getElementById("demo").innerHTML = x;
-        }
-      </script>
-      <form method="POST" action=<%='/urls/'+currentId+'/delete'%>></form>
+    
+      <form method="POST" action=<%='/urls/'+currentId+'/delete'%>>
+        <button type = "submit">DELETE</button>
+      </form>
       <li>longURL: <%=urls[currentId]%></li>
       <li>shortURL: <%=currentId  %></li>
       <li></li>

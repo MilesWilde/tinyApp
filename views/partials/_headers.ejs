@@ -2,22 +2,15 @@
   <h1>
     YEAAAAAAAAAAAAAAAAAAA
   </h1>
-  
-  <%if (username){%>
-    <div>
-      <%=username%>
-      <form action="/logout/" method="POST" style="margin:10px;">
-        <label for="logout">Logout</label>
-        
-        <input type="submit" value="Submit">
-      </form>
-  </div>
-  <%} else{%>
-  <form action="/login" method="POST" style="margin:150px;">
-    <label for="username">Login:</label>
-    <input id="username" type="text" name="username" placeholder="username" style="width: 300px">
-    <input type="submit" value="Submit">
-  </form>
+  <%console.log("IN THE HEADER", user);%>
+  <%if (!user){%>
+    <a href="http://localhost:8080/register">Register</a>
+    <a href="http://localhost:8080/login">Login</a>
+  <%} else if (user) {%>
+    <form method="POST" action="/logout">
+    <input type="submit" value="logout">
+    </form>
   <%}%>
+  
 </header>
 
