@@ -48,27 +48,23 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/login", (req,res)=>{
-  // console.log("body ", req.body);
-  // console.log("users[user].email: ", users[user].email)
-  // console.log("req.body['user_id']: ", req.body['user.id'])
-  // console.log("users[user].password: ", users[user].password)
-  // console.log("req.body['password']): ", req.body['password']);
-
+  //for loop checks if login email matches an email in the database, then does another check to compare encrypted hash password
+  //redirects to home if everything matches, else returns (403) for password not matching or user not existing
   for (user in users){
-    console.log(req.body.password, users[user].password)
     if (users[user].email == req.body['user.id'] && bcrypt.compareSync(req.body.password, users[user].password)){
       req.session.user_id = req.body['user.id'];
-      res.redirect("/");
+      res.redirect("/urls");
       return;
     } else if(users[user].email == req.body['user.id'] && !bcrypt.compareSync(req.body.password, users[user].password)){
       res.status(403).send("password incorrect");
       return;
     }
-  } 
+  }
   res.status(403).send("user does not exist");
-
 });
 
+//on appearing at login page, sends object to login page.
+//object contains information if there is a current user, to display necessary info
 app.get("/login", (req,res)=>{
   let templateVars = { 
     shortURL: req.params.id, 
@@ -78,21 +74,15 @@ app.get("/login", (req,res)=>{
 });
   
 
-
+//on receiving a POST to /urls, creates new tinyurl and redirects back to /urls
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
   let randomString = generateRandomString();
-  console.log("inside post /urls before update, urlDatabase: ", urlDatabase);
   let newUrlEntry = {longUrl: req.body.longURL, userID: req.session.user_id};
   urlDatabase[randomString] = newUrlEntry;
-  console.log("inside post /urls, after update urlDatabase: ", urlDatabase);
-
-
-  //Respond with a redirection to http://localhost:8080/urls/<shortURL>
   res.redirect("http://localhost:8080/urls/" + randomString);
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
+//on receiving a url /urls/:id/delete, deletes a shortURL listing if there is a user logged in & if that user created that shortURL
 app.post("/urls/:id/delete", (req, res) => {
   if(req.session.user_id == urlDatabase[req.params.id].userID){
     delete urlDatabase[req.params.id];  
@@ -102,6 +92,7 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 })
 
+//on receiving a POST to /urls/:id/update, will update that shortURL id if there is a user logged in and if that user created that shortURL
 app.post("/urls/:id/update/", (req, res) => {
   if(req.session.user_id == urlDatabase[req.params.id].userID){
     let updatedEntry = {longUrl: req.body.longURL, userID: req.session.user_id};
@@ -111,25 +102,29 @@ app.post("/urls/:id/update/", (req, res) => {
     res.status(403).send("need to be logged into the creator of this shortURL to update it")
   }
 })
+
+//redirects to a corresponding longURL given a url /u/:shortURL
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL].longUrl;
   res.redirect(longURL);
 });
 
+//renders urls_index by passing necessary render arguments
 app.get("/urls", (req, res) => {
   let templateVars = {
     urls: urlDatabase,
     user: req.session.user_id};
-    console.log("req.session.user_id: ", req.session.user_id);
   res.render("urls_index", templateVars);
 });
-//register
+//reders urls_register by passing necessary render arguments
 app.get("/register", (req,res)=>{
   let templateVars = {
     urls: urlDatabase,
     user: req.session.user_id};
   res.render("urls_register", templateVars);
 })
+
+//on receiving a POST to register, registers a user given their email doesn't exist in database and that there are no blanks in form
 app.post("/register", (req,res)=>{
   //checks if email exists, if yes sets flag = 1
   let flag = 0;
@@ -144,42 +139,41 @@ app.post("/register", (req,res)=>{
   //if email exists return 400 error
   }else if(flag == 1){
     res.status(400).send('email already exists in database')
-  //if email&password&no matching email, create new entry
+  //if email&password not blank, &no matching email, create new entry with email&password
   }else{
     const hashedPassword = bcrypt.hashSync(req.body.password, 10);
-    console.log("inside post register, hashedPassword: ", hashedPassword)
     let randomID = generateRandomString();
     users[randomID] = {
       id: randomID,
       email: req.body.email,
       password: hashedPassword
     };
-    console.log("posted to register, current users object: ", users);
     res.redirect("login");  
   }
 
   
 })
+
+//on receiving POST to logout, logs out current user by defaulting cookie
 app.post("/logout", (req,res)=> {
   req.session.user_id = null;
   res.redirect("/urls");
 })
+
+//on receiving url /urls/:id, will allow user to update that longURL given they are logged in as the created of that longURL
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]){
     res.end("Page doesn't exist");
     res.status(404);
   }
-  console.log("inside app.get('urls/:id')");
-  console.log("req.session.user_id: ", req.session.user_id)
-  console.log("urlDatabase[req.params.id].userID: ", urlDatabase[req.params.id].userID)
   if (req.session.user_id !== urlDatabase[req.params.id].userID){
-    res.status(403).send("you need to be logged in or logged in as the user who created this page");
+    res.status(403).send("you need to be logged in or logged in as the user who created this longURL");
   }
   let templateVars = { 
     shortURL: req.params.id, 
     urls: urlDatabase,
-    user: req.session.user_id};
-
+    user: req.session.user_id
+  };
   res.render("urls_show", templateVars);
 });
 app.get("/", (req, res) => {
