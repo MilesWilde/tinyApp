@@ -1,7 +1,3 @@
-<!-- Fill out the urls_show.ejs template to display the following:
-
-    The full URL and its shortened form. -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,6 +15,6 @@
     </form>
       
 
-      <li><%= shortURL  %> :<%= urls[shortURL]%></li>
+      <li><%= shortURL  %> :<%= urls[shortURL].longUrl%></li>
 </body>
 </html>
