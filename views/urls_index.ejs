@@ -17,9 +17,9 @@
     <a href="http://localhost:8080/urls/new">new tinyurl</a>
     <% for(let currentId in urls){ %>
       <%if(user == urls[currentId].userID){%>
-        <form method="POST" action=<%='/urls/'+currentId+'/delete'%>>
+        <form method="POST" action=<%='/urls/'+currentId+'/delete?_method=DELETE'%>>
           <button type = "submit">DELETE</button>
-        </form>
+        </form> 
         <li>longURL: <%=urls[currentId].longUrl%></li>
         <li>shortURL: <%=currentId  %></li>
         <li></li>

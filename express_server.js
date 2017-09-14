@@ -4,6 +4,8 @@ var PORT = process.env.PORT || 8080; // default port 8080
 const bodyParser = require("body-parser");
 var cookieSession = require('cookie-session')
 const bcrypt = require('bcrypt');
+var methodOverride = require('method-override')
+app.use(methodOverride('_method'))
 
 const users = { 
   "userRandomID": {
@@ -83,7 +85,7 @@ app.post("/urls", (req, res) => {
 });
 
 //on receiving a url /urls/:id/delete, deletes a shortURL listing if there is a user logged in & if that user created that shortURL
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id/delete", (req, res) => {
   if(req.session.user_id == urlDatabase[req.params.id].userID){
     delete urlDatabase[req.params.id];  
     res.redirect("http://localhost:8080/urls/");
